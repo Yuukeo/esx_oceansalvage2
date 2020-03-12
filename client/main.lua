@@ -1,29 +1,7 @@
-local Keys = {
-    ["ESC"] = 322, ["F1"] = 288, ["F2"] = 289, ["F3"] = 170, ["F5"] = 166, ["F6"] = 167, ["F7"] = 168, ["F8"] = 169, ["F9"] = 56, ["F10"] = 57,
-    ["~"] = 243, ["1"] = 157, ["2"] = 158, ["3"] = 160, ["4"] = 164, ["5"] = 165, ["6"] = 159, ["7"] = 161, ["8"] = 162, ["9"] = 163, ["-"] = 84, ["="] = 83, ["BACKSPACE"] = 177,
-    ["TAB"] = 37, ["Q"] = 44, ["W"] = 32, ["E"] = 38, ["R"] = 45, ["T"] = 245, ["Y"] = 246, ["U"] = 303, ["P"] = 199, ["["] = 39, ["]"] = 40, ["ENTER"] = 18,
-    ["CAPS"] = 137, ["A"] = 34, ["S"] = 8, ["D"] = 9, ["F"] = 23, ["G"] = 47, ["H"] = 74, ["K"] = 311, ["L"] = 182,
-    ["LEFTSHIFT"] = 21, ["Z"] = 20, ["X"] = 73, ["C"] = 26, ["V"] = 0, ["B"] = 29, ["N"] = 249, ["M"] = 244, [","] = 82, ["."] = 81,
-    ["LEFTCTRL"] = 36, ["LEFTALT"] = 19, ["SPACE"] = 22, ["RIGHTCTRL"] = 70,
-    ["HOME"] = 213, ["PAGEUP"] = 10, ["PAGEDOWN"] = 11, ["DELETE"] = 178,
-    ["LEFT"] = 174, ["RIGHT"] = 175, ["TOP"] = 27, ["DOWN"] = 173,
-    ["NENTER"] = 201, ["N4"] = 108, ["N5"] = 60, ["N6"] = 107, ["N+"] = 96, ["N-"] = 97, ["N7"] = 117, ["N8"] = 61, ["N9"] = 118
-}
-
 ESX = nil
-
-local HasAlreadyEnteredMarker = false
-local LastZone = nil
-local CurrentAction = nil
-local CurrentActionMsg = ''
-local CurrentActionData = {}
-local onDuty = false
-local BlipCloakRoom = nil
-local BlipVehicle = nil
-local BlipVehicleDeleter = nil
-local Blips = {}
-local OnJob = false
-local Done = false
+local HasAlreadyEnteredMarker, onDuty, OnJob, Done = false, false, false, false
+local LastZone, CurrentAction, CurrentActionMsg, BlipCloakRoom, BlipVehicle, BlipVehicleDeleter
+local CurrentActionData, Blips = {}, {}
 
 Citizen.CreateThread(function()
 	while ESX == nil do
@@ -103,7 +81,7 @@ Citizen.CreateThread(function()
 
 				ESX.ShowHelpNotification(_U('pickup'))
 
-				if IsControlJustReleased(1, Keys["E"]) and ESX.PlayerData.job ~= nil then
+				if IsControlJustReleased(1, 38) and ESX.PlayerData.job ~= nil then
 					TaskStartScenarioInPlace(playerPed, 'WORLD_HUMAN_WELDING', 0, true)
 					Citizen.Wait(17000)
 					StopNPCJob()
@@ -129,8 +107,8 @@ function CloakRoomMenu()
 	ESX.UI.Menu.CloseAll()
 
 	ESX.UI.Menu.Open('default', GetCurrentResourceName(), 'cloakroom', {
-		title    = _U('locker_title'),
-		align    = 'top-left',
+		title = _U('locker_title'),
+		align = 'top-left',
 		elements = elements
 	}, function(data, menu)
 
@@ -156,14 +134,14 @@ function CloakRoomMenu()
 
 		end
 
-		CurrentAction     = 'cloakroom_menu'
-		CurrentActionMsg  = Config.Zones.Cloakroom.hint
+		CurrentAction = 'cloakroom_menu'
+		CurrentActionMsg = Config.Zones.Cloakroom.hint
 		CurrentActionData = {}
 	end, function(data, menu)
 		menu.close()
 
-		CurrentAction     = 'cloakroom_menu'
-		CurrentActionMsg  = Config.Zones.Cloakroom.hint
+		CurrentAction = 'cloakroom_menu'
+		CurrentActionMsg = Config.Zones.Cloakroom.hint
 		CurrentActionData = {}
 	end)
 
@@ -178,8 +156,8 @@ function VehicleMenu()
 	ESX.UI.Menu.CloseAll()
 
 	ESX.UI.Menu.Open('default', GetCurrentResourceName(), 'spawn_vehicle', {
-		title    = _U('Vehicle_Menu_Title'),
-		align    = 'top-left',
+		title = _U('Vehicle_Menu_Title'),
+		align = 'top-left',
 		elements = elements
 	}, function(data, menu)
 
@@ -201,8 +179,8 @@ function VehicleMenu()
 	end, function(data, menu)
 		menu.close()
 
-		CurrentAction     = 'vehiclespawn_menu'
-		CurrentActionMsg  = Config.Zones.VehicleSpawner.hint
+		CurrentAction = 'vehiclespawn_menu'
+		CurrentActionMsg = Config.Zones.VehicleSpawner.hint
 		CurrentActionData = {}
 	end)
 
@@ -211,12 +189,12 @@ end
 AddEventHandler('esx_oceansalvage:hasEnteredMarker', function(zone)
 
 	if zone == 'Cloakroom' then
-		CurrentAction     = 'cloakroom_menu'
-		CurrentActionMsg  = Config.Zones.Cloakroom.hint
+		CurrentAction = 'cloakroom_menu'
+		CurrentActionMsg = Config.Zones.Cloakroom.hint
 		CurrentActionData = {}
 	elseif zone == 'VehicleSpawner' then
-		CurrentAction     = 'vehiclespawn_menu'
-		CurrentActionMsg  = Config.Zones.VehicleSpawner.hint
+		CurrentAction = 'vehiclespawn_menu'
+		CurrentActionMsg = Config.Zones.VehicleSpawner.hint
 		CurrentActionData = {}
 	elseif zone == 'VehicleDeleter' then
 
@@ -225,22 +203,22 @@ AddEventHandler('esx_oceansalvage:hasEnteredMarker', function(zone)
 			local vehicle = GetVehiclePedIsIn(playerPed, false)
 
 			if GetPedInVehicleSeat(vehicle, -1) == playerPed then
-				CurrentAction     = 'delete_vehicle'
-				CurrentActionMsg  = Config.Zones.VehicleDeleter.hint
+				CurrentAction = 'delete_vehicle'
+				CurrentActionMsg = Config.Zones.VehicleDeleter.hint
 				CurrentActionData = {}
 			end
 		end
 
-	elseif zone == 'Vente' then
-		CurrentAction     = 'vente'
-		CurrentActionMsg  = Config.Zones.Vente.hint
+	elseif zone == 'Sale' then
+		CurrentAction = 'sale'
+		CurrentActionMsg = Config.Zones.Sale.hint
 		CurrentActionData = {}
 	end
 end)
 
 AddEventHandler('esx_oceansalvage:hasExitedMarker', function(zone)
-	if zone == 'Vente' then
-		TriggerServerEvent('esx_oceansalvage:stopVente')
+	if zone == 'Sale' then
+		TriggerServerEvent('esx_oceansalvage:stopSale')
 	end
 
 	CurrentAction = nil
@@ -281,14 +259,14 @@ function CreateBlip()
 		AddTextComponentString(Config.Zones.VehicleSpawner.BlipName)
 		EndTextCommandSetBlipName(BlipVehicle)
 
-		BlipVente = AddBlipForCoord(Config.Zones.Vente.Pos.x, Config.Zones.Vente.Pos.y, Config.Zones.Vente.Pos.z)
-		SetBlipSprite(BlipVente, Config.Zones.Vente.BlipSprite)
-		SetBlipColour(BlipVente, Config.Zones.Vente.BlipColor)
-		SetBlipAsShortRange(BlipVente, true)
+		BlipSale = AddBlipForCoord(Config.Zones.Sale.Pos.x, Config.Zones.Sale.Pos.y, Config.Zones.Sale.Pos.z)
+		SetBlipSprite(BlipSale, Config.Zones.Sale.BlipSprite)
+		SetBlipColour(BlipSale, Config.Zones.Sale.BlipColor)
+		SetBlipAsShortRange(BlipSale, true)
 
 		BeginTextCommandSetBlipName("STRING")
-		AddTextComponentString(Config.Zones.Vente.BlipName)
-		EndTextCommandSetBlipName(BlipVente)
+		AddTextComponentString(Config.Zones.Sale.BlipName)
+		EndTextCommandSetBlipName(BlipSale)
 
 		BlipVehicleDeleter = AddBlipForCoord(Config.Zones.VehicleDeleter.Pos.x, Config.Zones.VehicleDeleter.Pos.y, Config.Zones.VehicleDeleter.Pos.z)
 		SetBlipSprite(BlipVehicleDeleter, Config.Zones.VehicleDeleter.BlipSprite)
@@ -305,9 +283,9 @@ function CreateBlip()
 			BlipVehicle = nil
 		end
 
-		if BlipVente ~= nil then
-			RemoveBlip(BlipVente)
-			BlipVente = nil
+		if BlipSale ~= nil then
+			RemoveBlip(BlipSale)
+			BlipSale = nil
 		end
 
 		if BlipVehicleDeleter ~= nil then
@@ -353,8 +331,8 @@ Citizen.CreateThread(function()
 		Citizen.Wait(1)
 
 		if ESX.PlayerData.job ~= nil then
-			local coords      = GetEntityCoords(PlayerPedId())
-			local isInMarker  = false
+			local coords = GetEntityCoords(PlayerPedId())
+			local isInMarker = false
 			local currentZone = nil
 
 			if ESX.PlayerData.job.name == Config.JobName then
@@ -362,7 +340,7 @@ Citizen.CreateThread(function()
 					for k,v in pairs(Config.Zones) do
 						if v ~= Config.Zones.Cloakroom then
 							if(GetDistanceBetweenCoords(coords, v.Pos.x, v.Pos.y, v.Pos.z, true) <= v.Size.x) then
-								isInMarker  = true
+								isInMarker = true
 								currentZone = k
 							end
 						end
@@ -371,14 +349,14 @@ Citizen.CreateThread(function()
 
 				local Cloakroom = Config.Zones.Cloakroom
 				if(GetDistanceBetweenCoords(coords, Cloakroom.Pos.x, Cloakroom.Pos.y, Cloakroom.Pos.z, true) <= Cloakroom.Size.x) then
-					isInMarker  = true
+					isInMarker = true
 					currentZone = "Cloakroom"
 				end
 			end
 
 			if (isInMarker and not HasAlreadyEnteredMarker) or (isInMarker and LastZone ~= currentZone) then
 				HasAlreadyEnteredMarker = true
-				LastZone                = currentZone
+				LastZone = currentZone
 				TriggerEvent('esx_oceansalvage:hasEnteredMarker', currentZone)
 			end
 			if not isInMarker and HasAlreadyEnteredMarker then
@@ -416,9 +394,9 @@ Citizen.CreateThread(function()
 							VehicleMenu()
 						end
 
-					elseif CurrentAction == 'vente' then
+					elseif CurrentAction == 'sale' then
 
-						TriggerServerEvent('esx_oceansalvage:startVente')
+						TriggerServerEvent('esx_oceansalvage:startSale')
 						TaskStartScenarioInPlace(playerPed, "WORLD_HUMAN_CLIPBOARD", 0, 1)
 
 					elseif CurrentAction == 'delete_vehicle' then
