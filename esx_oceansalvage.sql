@@ -8,6 +8,6 @@ INSERT INTO `job_grades` (`job_name`, `grade`, `name`, `label`, `salary`, `skin_
 	('salvage', 0, 'employee', 'Diver', 80, '{}', '{}')
 ;
 
-INSERT INTO `items` (`name`, `label`, `limit`, `rare`, `can_remove`) VALUES
-	('contrat', 'Salvage', 15, 0, 1)
+INSERT INTO `items` (`name`, `label`, `weight`, `rare`, `can_remove`) VALUES
+	('contrat', 'Salvage', 1, 0, 1)
 ;
